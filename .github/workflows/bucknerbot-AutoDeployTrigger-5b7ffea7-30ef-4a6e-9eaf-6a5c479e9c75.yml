@@ -31,10 +31,8 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath:           ${{ github.workspace }}
-          dockerfilePath:          'Dockerfile'
-          registryUrl:             'bucknerbot.azurecr.io'
-          registryUsername:        ${{ secrets.BUCKNERBOT_REGISTRY_USERNAME }}
-          registryPassword:        ${{ secrets.BUCKNERBOT_REGISTRY_PASSWORD }}
+          dockerfilePath:          'Dockerfile'                     # optional if your Dockerfile is root
+          acrName:                 'bucknerbot'                     # <-- your ACR name, no URL
           imageToBuild:            'bucknerbot.azurecr.io/bucknerbot:${{ github.sha }}'
           containerAppName:        'bucknerbot'
           resourceGroup:           'BucknerBot'
