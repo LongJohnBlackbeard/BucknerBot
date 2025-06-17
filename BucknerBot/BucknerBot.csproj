@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>dotnet-BucknerBot-5c89fe53-7094-4a8b-995e-a96594779b20</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    </PropertyGroup>
+
+    <Target Name="CopyOpusNative" AfterTargets="Build">
+        <ItemGroup>
+            <!-- wildcard picks up the DLL in whatever version folder you have -->
+            <OpusNative Include="$(PkgConcentus_Native_win_x64)runtimes\win-x64\native\*.dll" />
+        </ItemGroup>
+        <Copy SourceFiles="@(OpusNative)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+    </Target>
+
+    <ItemGroup>
+        <PackageReference Include="Concentus.Native" Version="1.5.2" />
+        <PackageReference Include="ElevenLabs-DotNet" Version="3.5.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.6" />
+        <PackageReference Include="NAudio" Version="2.2.1" />
+        <PackageReference Include="NetCord" Version="1.0.0-alpha.384" />
+        <PackageReference Include="NetCord.Hosting" Version="1.0.0-alpha.384" />
+        <PackageReference Include="NetCord.Hosting.Services" Version="1.0.0-alpha.384" />
+        <PackageReference Include="NetCord.Services" Version="1.0.0-alpha.384" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+      <Content Remove="DiscordBot\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="DiscordBot\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="DiscordBot\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="DiscordBot\**" />
+    </ItemGroup>
+</Project>
