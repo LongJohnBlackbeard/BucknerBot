@@ -30,8 +30,8 @@ jobs:
       - name: Build & deploy Container App
         uses: azure/container-apps-deploy-action@v2
         with:
-          appSourcePath:           ${{ github.workspace }}/BucknerBot   # <— context is the BucknerBot folder
-          dockerfilePath:          'Dockerfile'                        # now it lives at the root of that context
+          appSourcePath:           ${{ github.workspace }}
+          dockerfilePath:          'BucknerBot/Dockerfile'    # <— your path under the repo root
           acrName:                 'bucknerbot'
           imageToBuild:            'bucknerbot.azurecr.io/bucknerbot:${{ github.sha }}'
           containerAppName:        'bucknerbot'
@@ -39,4 +39,5 @@ jobs:
           containerAppEnvironment: 'managedEnvironment-BucknerBot-88e6'
           buildArguments: |
             SOME_ARG=foo ANOTHER_ARG=bar
+
 
