@@ -13,7 +13,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write       # for OIDC
+      id-token: write
       contents: read
 
     steps:
@@ -23,7 +23,6 @@ jobs:
       - name: Azure Login via OIDC
         uses: azure/login@v2
         with:
-          auth-type:       oidc
           client-id:       ${{ secrets.BUCKNERBOT_AZURE_CLIENT_ID }}
           tenant-id:       ${{ secrets.BUCKNERBOT_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.BUCKNERBOT_AZURE_SUBSCRIPTION_ID }}
@@ -32,7 +31,7 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath:           ${{ github.workspace }}
-          dockerfilePath:          'Dockerfile'                       # adjust if in a subfolder
+          dockerfilePath:          'Dockerfile'
           registryUrl:             'bucknerbot.azurecr.io'
           registryUsername:        ${{ secrets.BUCKNERBOT_REGISTRY_USERNAME }}
           registryPassword:        ${{ secrets.BUCKNERBOT_REGISTRY_PASSWORD }}
