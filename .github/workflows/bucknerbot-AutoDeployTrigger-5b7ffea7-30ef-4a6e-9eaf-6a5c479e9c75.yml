@@ -1,48 +1,44 @@
 name: Trigger auto deployment for bucknerbot
 
-# When this action will be executed
 on:
-  # Automatically trigger it when detected changes in repo
   push:
-    branches: 
-      [ main ]
+    branches:
+      - main
     paths:
-    - '**'
-    - '.github/workflows/bucknerbot-AutoDeployTrigger-5b7ffea7-30ef-4a6e-9eaf-6a5c479e9c75.yml'
-
-  # Allow manual trigger 
-  workflow_dispatch:      
+      - '**'
+      - '.github/workflows/bucknerbot-AutoDeployTrigger-5b7ffea7-30ef-4a6e-9eaf-6a5c479e9c75.yml'
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions: 
-      id-token: write #This is required for requesting the OIDC JWT Token
-      contents: read #Required when GH token is used to authenticate with private repo
+    permissions:
+      id-token: write       # for OIDC
+      contents: read
 
     steps:
-      - name: Checkout to the branch
+      - name: Checkout code
         uses: actions/checkout@v2
 
       - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.BUCKNERBOT_AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.BUCKNERBOT_AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.BUCKNERBOT_AZURE_SUBSCRIPTION_ID }}
+          auth-type:         oidc
+          client-id:         ${{ secrets.BUCKNERBOT_AZURE_CLIENT_ID }}
+          tenant-id:         ${{ secrets.BUCKNERBOT_AZURE_TENANT_ID }}
+          subscription-id:   ${{ secrets.BUCKNERBOT_AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build and push container image to registry
+      - name: Build & deploy Container App
         uses: azure/container-apps-deploy-action@v2
         with:
-          appSourcePath: ${{ github.workspace }}
-          _dockerfilePathKey_: _dockerfilePath_
-          registryUrl: bucknerbot.azurecr.io
-          registryUsername: ${{ secrets.BUCKNERBOT_REGISTRY_USERNAME }}
-          registryPassword: ${{ secrets.BUCKNERBOT_REGISTRY_PASSWORD }}
-          containerAppName: bucknerbot
-          resourceGroup: BucknerBot
-          imageToBuild: bucknerbot.azurecr.io/bucknerbot:${{ github.sha }}
-          _buildArgumentsKey_: |
-            _buildArgumentsValues_
-
-
+          appSourcePath:          ${{ github.workspace }}
+          dockerfilePath:         'Dockerfile'                     # or './path/to/Dockerfile' if it lives in a subfolder
+          registryUrl:            'bucknerbot.azurecr.io'
+          registryUsername:       ${{ secrets.BUCKNERBOT_REGISTRY_USERNAME }}
+          registryPassword:       ${{ secrets.BUCKNERBOT_REGISTRY_PASSWORD }}
+          imageToBuild:           'bucknerbot.azurecr.io/bucknerbot:${{ github.sha }}'
+          containerAppName:       'bucknerbot'
+          resourceGroup:          'BucknerBot'
+          containerAppEnvironment: 'managedEnvironment-BucknerBot-88e6' 
+          buildArguments: |
+            SOME_ARG=foo ANOTHER_ARG=bar
